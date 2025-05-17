@@ -10,7 +10,7 @@ export class Player {
   }
 
   status: PlayerStatus;
-  currentMatchId?: string;
   score: number = 0;
+  currentMatchId?: string;
   move?: Move;
 }

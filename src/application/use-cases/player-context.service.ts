@@ -39,11 +39,4 @@ export class PlayerContextService {
   addMatch(match: Match) {
     return this.matchRepo.add(match);
   }
-
-  getOpponent(player: Player): Player | null {
-    if (!player.currentMatchId) return null;
-    const match = this.getMatchById(player.currentMatchId);
-    const opponentId = match.playerIds.find((id) => id !== player.id);
-    return opponentId ? (this.playerRepo.findById(opponentId) ?? null) : null;
-  }
 }

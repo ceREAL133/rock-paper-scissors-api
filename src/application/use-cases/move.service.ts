@@ -91,19 +91,6 @@ export class MoveService {
     player2.move = undefined;
   }
 
-  submitScore(playerId: string) {
-    const player = this.context.getPlayerById(playerId);
-
-    if (!player?.score && player?.score !== 0) {
-      this.logger.warn(`Player ${playerId} is not found`);
-      return;
-    }
-
-    this.server.to(playerId).emit('score', {
-      score: player.score,
-    });
-  }
-
   private resolveGame(move1: Move, move2: Move): Result {
     if (move1 === move2) return Result.Draw;
     if (
