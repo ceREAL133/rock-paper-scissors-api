@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 
 import { Move } from '../../domain/enums/move.enum';
 import { Result } from '../../domain/enums/result.enum';
-import { PlayerStatus } from '../../domain/enums/playerStatus.enum';
+import { PlayerStatus } from '../../domain/enums/player-status.enum';
 import { Player } from '../../domain/models/player';
 import { PlayerContextService } from './player-context.service';
 

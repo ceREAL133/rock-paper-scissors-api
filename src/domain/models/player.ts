@@ -1,5 +1,5 @@
 import { Move } from '../enums/move.enum';
-import { PlayerStatus } from '../enums/playerStatus.enum';
+import { PlayerStatus } from '../enums/player-status.enum';
 
 export class Player {
   constructor(

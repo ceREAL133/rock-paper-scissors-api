@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import { Player } from '../../domain/models/player';
 import { Match } from '../../domain/models/match';
 import { CreatePlayerDto } from '../dto/create-player.dto';
-import { PlayerStatus } from '../../domain/enums/playerStatus.enum';
+import { PlayerStatus } from '../../domain/enums/player-status.enum';
 import { PlayerContextService } from './player-context.service';
 
 @Injectable()
