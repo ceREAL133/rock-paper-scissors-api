@@ -7,6 +7,10 @@ import { PlayerStatus } from '../../domain/enums/player-status.enum';
 import { Player } from '../../domain/models/player';
 import { PlayerContextService } from './player-context.service';
 
+type GameOutcome =
+  | { result: Result.Draw }
+  | { result: Result.Win; winnerId: string };
+
 @Injectable()
 export class MoveService {
   private readonly logger = new Logger(MoveService.name);
@@ -64,17 +68,17 @@ export class MoveService {
       return;
     }
 
-    const result = this.resolveGame(player1.move, player2.move);
+    const roundOutcome = this.resolveGame(player1, player2);
     this.logger.log(
-      `Match ${match.id} result: ${player1.username} (${player1.move}) vs ${player2.username} (${player2.move}) → ${result}`,
+      `Match ${match.id} result: ${player1.username} (${player1.move}) vs ${player2.username} (${player2.move}) → ${roundOutcome.result}`,
     );
 
     let outcome1: Result;
     let outcome2: Result;
 
-    if (result === Result.Draw) {
+    if (roundOutcome.result === Result.Draw) {
       outcome1 = outcome2 = Result.Draw;
-    } else if (result === Result.Player1) {
+    } else if (roundOutcome.winnerId === player1.id) {
       player1.score += 1;
       outcome1 = Result.Win;
       outcome2 = Result.Lose;
@@ -91,29 +95,17 @@ export class MoveService {
     player2.move = undefined;
   }
 
-  submitScore(playerId: string) {
-    const player = this.context.getPlayerById(playerId);
+  private resolveGame(player1: Player, player2: Player): GameOutcome {
+    if (player1.move === player2.move) return { result: Result.Draw };
 
-    if (!player?.score && player?.score !== 0) {
-      this.logger.warn(`Player ${playerId} is not found`);
-      return;
-    }
+    const winnerId =
+      (player1.move === Move.Rock && player2.move === Move.Scissors) ||
+      (player1.move === Move.Scissors && player2.move === Move.Paper) ||
+      (player1.move === Move.Paper && player2.move === Move.Rock)
+        ? player1.id
+        : player2.id;
 
-    this.server.to(playerId).emit('score', {
-      score: player.score,
-    });
-  }
-
-  private resolveGame(move1: Move, move2: Move): Result {
-    if (move1 === move2) return Result.Draw;
-    if (
-      (move1 === Move.Rock && move2 === Move.Scissors) ||
-      (move1 === Move.Scissors && move2 === Move.Paper) ||
-      (move1 === Move.Paper && move2 === Move.Rock)
-    ) {
-      return Result.Player1;
-    }
-    return Result.Player2;
+    return { result: Result.Win, winnerId };
   }
 
   private emitMatchResult(player: Player, opponent: Player, outcome: Result) {

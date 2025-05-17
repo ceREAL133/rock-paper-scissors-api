@@ -157,12 +157,18 @@ export class MatchmakingService {
   }
 
   private notifyMatchCreated(playerA: Player, playerB: Player) {
-    this.server.to(playerA.id).emit('match_created', {
-      opponent: playerB.username,
-    });
+    const players = [playerA, playerB];
 
-    this.server.to(playerB.id).emit('match_created', {
-      opponent: playerA.username,
+    if (players.length !== 2) {
+      this.logger.warn('Invalid number of players');
+      return;
+    }
+
+    players.forEach((player, idx) => {
+      const opponent = players[1 - idx];
+      this.server.to(player.id).emit('match_created', {
+        opponent: opponent.username,
+      });
     });
   }
 
